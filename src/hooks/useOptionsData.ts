@@ -35,26 +35,21 @@ export const useOptionsData = (ticker: string = 'AAPL'): UseOptionsDataReturn =>
       });
       
       if (response.results && response.results.length > 0) {
-        // Less aggressive filtering to see what data we're getting
+        // Process the data with minimal filtering for now
         const processedData = response.results
           .filter(contract => {
-            const hasValidStrike = contract.strike_price > 0;
-            const hasValidExpiration = contract.expiration_date && new Date(contract.expiration_date) > new Date();
-            const hasOpenInterest = contract.open_interest > 0;
+            // Basic validation - just ensure we have required fields
+            const hasValidStrike = typeof contract.strike_price === 'number' && contract.strike_price > 0;
+            const hasValidExpiration = contract.expiration_date && contract.expiration_date.length > 0;
+            const hasValidType = contract.contract_type === 'call' || contract.contract_type === 'put';
             
-            console.log('Contract filter check:', {
-              ticker: contract.ticker,
-              hasValidStrike,
-              hasValidExpiration,
-              hasOpenInterest,
-              strike: contract.strike_price,
-              expiration: contract.expiration_date,
-              openInterest: contract.open_interest
-            });
-            
-            return hasValidStrike && hasValidExpiration;
+            return hasValidStrike && hasValidExpiration && hasValidType;
           })
-          .slice(0, 1000); // Increased limit to see more data
+          .map(contract => ({
+            ...contract,
+            // Ensure open_interest has a default value if missing
+            open_interest: contract.open_interest || 100 // Fixed size for now as requested
+          }));
         
         console.log('Processed data length:', processedData.length);
         console.log('Sample processed contracts:', processedData.slice(0, 5));

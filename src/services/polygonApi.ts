@@ -27,8 +27,7 @@ export class PolygonApiService {
       const params = new URLSearchParams({
         'underlying_ticker': underlyingTicker,
         'apikey': API_KEY,
-        'limit': '1000',
-        'active': 'true'
+        'limit': '50'
       });
 
       if (expirationDate) {
@@ -41,7 +40,6 @@ export class PolygonApiService {
       const response = await fetch(url);
 
       console.log('Response status:', response.status);
-      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
 
       if (!response.ok) {
         const errorText = await response.text();

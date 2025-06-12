@@ -45,10 +45,8 @@ export const OptionsScatterPlot: React.FC<OptionsScatterPlotProps> = ({
       .range([innerHeight, 0])
       .nice();
 
-    const radiusScale = d3
-      .scaleSqrt()
-      .domain([0, d3.max(data, (d) => d.open_interest) || 0])
-      .range([2, 15]);
+    // Fixed radius as requested
+    const fixedRadius = 6;
 
     const colorScale = d3
       .scaleOrdinal<string>()
@@ -175,7 +173,7 @@ export const OptionsScatterPlot: React.FC<OptionsScatterPlotProps> = ({
       .transition()
       .duration(1000)
       .delay((_, i) => i * 2)
-      .attr('r', (d) => radiusScale(d.open_interest));
+      .attr('r', fixedRadius);
 
     // Add legend
     const legend = svg
@@ -197,7 +195,7 @@ export const OptionsScatterPlot: React.FC<OptionsScatterPlotProps> = ({
 
     legendItems
       .append('circle')
-      .attr('r', 8)
+      .attr('r', fixedRadius)
       .attr('fill', (d) => d.color)
       .attr('opacity', 0.7);
 
@@ -209,44 +207,6 @@ export const OptionsScatterPlot: React.FC<OptionsScatterPlotProps> = ({
       .style('font-weight', '500')
       .style('fill', '#374151')
       .text((d) => d.label);
-
-    // Add size legend
-    const sizeLegend = svg
-      .append('g')
-      .attr('transform', `translate(${width - 150}, 120)`);
-
-    sizeLegend
-      .append('text')
-      .attr('y', -10)
-      .style('font-size', '12px')
-      .style('font-weight', '600')
-      .style('fill', '#374151')
-      .text('Open Interest');
-
-    const maxOI = d3.max(data, (d) => d.open_interest) || 0;
-    const sizeLegendData = [maxOI * 0.25, maxOI * 0.5, maxOI * 0.75, maxOI];
-
-    const sizeLegendItems = sizeLegend
-      .selectAll('.size-legend-item')
-      .data(sizeLegendData)
-      .enter()
-      .append('g')
-      .attr('class', 'size-legend-item')
-      .attr('transform', (_, i) => `translate(0, ${i * 20 + 10})`);
-
-    sizeLegendItems
-      .append('circle')
-      .attr('r', (d) => radiusScale(d))
-      .attr('fill', '#9CA3AF')
-      .attr('opacity', 0.6);
-
-    sizeLegendItems
-      .append('text')
-      .attr('x', 25)
-      .attr('y', 5)
-      .style('font-size', '11px')
-      .style('fill', '#6B7280')
-      .text((d) => d3.format('.0f')(d));
 
   }, [data, width, height]);
 
@@ -275,7 +235,6 @@ export const OptionsScatterPlot: React.FC<OptionsScatterPlotProps> = ({
             <div>Type: <span className="font-medium capitalize">{tooltip.contract.contract_type}</span></div>
             <div>Strike: <span className="font-medium">${tooltip.contract.strike_price}</span></div>
             <div>Expires: <span className="font-medium">{new Date(tooltip.contract.expiration_date).toLocaleDateString()}</span></div>
-            <div>Open Interest: <span className="font-medium">{tooltip.contract.open_interest.toLocaleString()}</span></div>
           </div>
         </div>
       )}
