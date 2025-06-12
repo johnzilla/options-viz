@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { BarChart3, TrendingUp, Info, Bug } from 'lucide-react';
+import { BarChart3, TrendingUp, Info } from 'lucide-react';
 import { OptionsScatterPlot } from './components/OptionsScatterPlot';
 import { LoadingSpinner } from './components/LoadingSpinner';
 import { ErrorMessage } from './components/ErrorMessage';
 import { useOptionsData } from './hooks/useOptionsData';
 
 function App() {
-  const { data, loading, error, refetch, debugInfo } = useOptionsData('AAPL');
+  const { data, loading, error, refetch } = useOptionsData('AAPL');
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
-  const [showDebug, setShowDebug] = useState(false);
 
   // Responsive chart sizing
   useEffect(() => {
@@ -51,13 +50,6 @@ function App() {
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <button
-                onClick={() => setShowDebug(!showDebug)}
-                className="px-3 py-2 bg-yellow-100 text-yellow-700 rounded-lg hover:bg-yellow-200 transition-colors duration-200 flex items-center space-x-2 border border-yellow-300"
-              >
-                <Bug className="w-4 h-4" />
-                <span>Debug</span>
-              </button>
               <div className="text-right">
                 <div className="text-sm text-gray-500">Last Updated</div>
                 <div className="text-sm font-medium text-gray-900">
@@ -76,37 +68,6 @@ function App() {
           </div>
         </div>
       </header>
-
-      {/* Debug Panel */}
-      {showDebug && (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-            <h3 className="text-lg font-semibold text-yellow-800 mb-2">Debug Information</h3>
-            <div className="space-y-4">
-              <div>
-                <h4 className="font-medium text-yellow-700">API Response Status:</h4>
-                <p className="text-sm text-yellow-600">{debugInfo?.status || 'No debug info available'}</p>
-              </div>
-              <div>
-                <h4 className="font-medium text-yellow-700">Raw Results Count:</h4>
-                <p className="text-sm text-yellow-600">{debugInfo?.resultsLength || 0}</p>
-              </div>
-              <div>
-                <h4 className="font-medium text-yellow-700">Filtered Results Count:</h4>
-                <p className="text-sm text-yellow-600">{data.length}</p>
-              </div>
-              {debugInfo?.firstFewResults && (
-                <div>
-                  <h4 className="font-medium text-yellow-700">Sample Raw Data:</h4>
-                  <pre className="text-xs text-yellow-700 bg-yellow-100 p-3 rounded overflow-auto max-h-64">
-                    {JSON.stringify(debugInfo.firstFewResults, null, 2)}
-                  </pre>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -193,16 +154,9 @@ function App() {
               <div className="text-center py-12">
                 <BarChart3 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">No Data Available</h3>
-                <p className="text-gray-600 mb-4">
+                <p className="text-gray-600">
                   No options data found for the selected criteria.
                 </p>
-                {debugInfo && (
-                  <div className="text-sm text-gray-500 bg-gray-50 p-3 rounded-lg inline-block">
-                    API Status: {debugInfo.status} | 
-                    Raw Results: {debugInfo.resultsLength} | 
-                    After Filtering: {data.length}
-                  </div>
-                )}
               </div>
             )}
             

@@ -34,26 +34,15 @@ export class PolygonApiService {
         params.append('expiration_date', expirationDate);
       }
 
-      const url = `${BASE_URL}/v3/reference/options/contracts?${params}`;
-      console.log('Making API request to:', url.replace(API_KEY, 'API_KEY_HIDDEN'));
-
-      const response = await fetch(url);
-
-      console.log('Response status:', response.status);
+      const response = await fetch(
+        `${BASE_URL}/v3/reference/options/contracts?${params}`
+      );
 
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error('API Error Response:', errorText);
-        throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data: OptionsChainResponse = await response.json();
-      console.log('API Response:', {
-        status: data.status,
-        count: data.count,
-        resultsLength: data.results?.length || 0,
-        firstResult: data.results?.[0]
-      });
       
       if (data.status !== 'OK') {
         throw new Error(`API error: ${data.status}`);
